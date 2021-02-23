@@ -6,8 +6,14 @@
         xmlns:local="clr-namespace:AutoDeployedWpfDemo"
         mc:Ignorable="d"
         Title="Auto Deployed WPF Demo" Height="450" Width="800">
-    <Grid>
-        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14"><Run Text="This application demonstrates setup of CI/CD of desktop application using "/><Run Text="cake.build"/></TextBlock>
-
-    </Grid>
+    <StackPanel Orientation="Vertical">
+        <TextBlock HorizontalAlignment="Center" Margin="10 50 10 10" FontSize="14"><Run Text="This application demonstrates setup of CI/CD of desktop application using "/><Run Text="cake.build"/></TextBlock>
+        <StackPanel Orientation="Vertical" Width="400">
+            <TextBlock x:Name="updateInfoText" 
+                   FontSize="14" 
+                   TextWrapping="Wrap" 
+                   Foreground="Black"
+                   />
+        </StackPanel>
+    </StackPanel>
 </Window>

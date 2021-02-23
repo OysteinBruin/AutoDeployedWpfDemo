@@ -41,7 +41,32 @@ namespace AutoDeployedWpfDemo
         {
             using (var manager = new UpdateManager("https://autodeployedwpfdemo.blob.core.windows.net/src/"))
             {
-                await manager.UpdateApp();
+                UpdateInfo info = await manager.CheckForUpdate();
+                var sb = new StringBuilder("Check for updates result:");
+
+                if (info != null)
+                {
+                    var releaseNotes = info.FetchReleaseNotes();
+                    foreach (var item in releaseNotes)
+                    {
+                        sb.Append("Package ");
+                        sb.Append(item.Key.PackageName);
+                        sb.Append(" - File ");
+                        sb.AppendLine(item.Key.Filename);
+                    }
+
+                    
+
+                   // ReleaseEntry entry = await manager.UpdateApp();
+
+
+                }
+                else
+                {
+                    sb.AppendLine("No updates avavilable.");
+                }
+
+                this.updateInfoText.Text = sb.ToString();
             }
         }
     }
