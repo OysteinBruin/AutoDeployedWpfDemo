@@ -62,6 +62,7 @@ deploy:
    storage_access_key:
      secure: a90Xur2gLr+DEtTH0U5Yp7QE2CSbBsmdOdmrI1KxuFt3Yfg0ga9Hd+tlnXsJjVdhlrKswQdiFtimjDyMFNjjTGMKHeOe4pCSp8ZuhYEHbzDwjP1p5qF2PczfuY6o3XJI
    container: src
+   remove_files: true
    #folder: 
    #artifact: SrcArtifact
 
