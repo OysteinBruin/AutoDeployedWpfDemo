@@ -54,11 +54,7 @@ namespace AutoDeployedWpfDemo
                         sb.Append(" - File ");
                         sb.AppendLine(item.Key.Filename);
                     }
-
-                    
-
                    // ReleaseEntry entry = await manager.UpdateApp();
-
 
                 }
                 else
