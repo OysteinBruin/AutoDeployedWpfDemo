@@ -7,9 +7,7 @@
         mc:Ignorable="d"
         Title="Auto Deployed WPF Demo" Height="450" Width="800">
     <Grid>
-        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14" >
-            This application demonstrates setup of CI/CD of desktop application using ... 
-        </TextBlock>
-        
+        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14"><Run Text="This application demonstrates setup of CI/CD of desktop application using "/><Run Text="cake.build"/></TextBlock>
+
     </Grid>
 </Window>
