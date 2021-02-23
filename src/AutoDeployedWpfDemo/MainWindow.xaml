@@ -5,8 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AutoDeployedWpfDemo"
         mc:Ignorable="d"
-        Title="Auto Deployed Wpf Demo" Height="450" Width="800">
+        Title="Auto Deployed WPF Demo" Height="450" Width="800">
     <Grid>
+        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14" >
+            This application demonstrates setup of CI/CD of desktop application using ... 
+        </TextBlock>
         
     </Grid>
 </Window>

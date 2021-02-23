@@ -41,7 +41,7 @@ platform: Any CPU
 configuration: Release
 
 build_script:
-  - ps: .\build.ps1 --buildPath="./src/AutoDeployedWpfDemo/bin/Release" --appId=$env:APPVEYOR_BUILD_NAME --appVersion=$env:APPVEYOR_BUILD_VERSION
+  - ps: .\build.ps1 --buildPath="./src/AutoDeployedWpfDemo/bin/Release" --appId="AutoDeployedWpfDemo" --appVersion=$env:APPVEYOR_BUILD_VERSION
 
 
 #---------------------------------#
@@ -60,7 +60,7 @@ deploy:
 -  provider: AzureBlob
    storage_account_name: autodeployedwpfdemo
    storage_access_key:
-     secure: rNsVVkL4OVZASXIXU87pL/OkV52XlGVTr7FjRswVk0ZVe0sNpG8f5BidVDR06Hs8L1Rszm3GJW7tK/6BVSJB8Q==
+     secure: a90Xur2gLr+DEtTH0U5Yp7QE2CSbBsmdOdmrI1KxuFt3Yfg0ga9Hd+tlnXsJjVdhlrKswQdiFtimjDyMFNjjTGMKHeOe4pCSp8ZuhYEHbzDwjP1p5qF2PczfuY6o3XJI
    container: src
    #folder: 
    #artifact: SrcArtifact

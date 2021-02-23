@@ -26,6 +26,7 @@ namespace AutoDeployedWpfDemo
         {
             InitializeComponent();
             AddVersionNumber();
+            CheckForUpdates();
         }
 
         private void AddVersionNumber()
@@ -33,12 +34,12 @@ namespace AutoDeployedWpfDemo
             System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
             FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
 
-            this.Title += $" v.{ versionInfo.FileVersion }";
+            this.Title += $" v{ versionInfo.FileVersion }";
         }
 
         private async Task CheckForUpdates()
         {
-            using (var manager = new UpdateManager(@"C:\Temp\Releases"))
+            using (var manager = new UpdateManager("https://autodeployedwpfdemo.blob.core.windows.net/src/"))
             {
                 await manager.UpdateApp();
             }
