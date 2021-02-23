@@ -31,7 +31,6 @@ assembly_info:
   file: AssemblyInfo.*
   assembly_version: '{version}'
   assembly_file_version: '{version}'
-
   
 #---------------------------------#
 #       build configuration       #
