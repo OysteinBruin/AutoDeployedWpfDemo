@@ -1,0 +1,71 @@
+#---------------------------------#
+#      general configuration      #
+#---------------------------------#
+
+version: 1.0.{build}
+
+branches:
+  only:
+   - master
+ 
+
+#---------------------------------#
+#    test configuration           #
+#---------------------------------#
+test: off
+  # only assemblies to test
+ # assemblies:
+ #   only:
+        
+
+#---------------------------------#
+#    environment configuration    #
+#---------------------------------#
+
+clone_depth: 1
+
+image: Visual Studio 2019
+
+assembly_info:
+  patch: true
+  file: AssemblyInfo.*
+  assembly_version: '{version}'
+  assembly_file_version: '{version}'
+
+  
+#---------------------------------#
+#       build configuration       #
+#---------------------------------#
+
+platform: Any CPU
+
+configuration: Release
+
+build_script:
+  - ps: .\build.ps1 --buildPath="./src/AutoDeployedWpfDemo/bin/Release" --appId=$env:APPVEYOR_BUILD_NAME --appVersion=$env:APPVEYOR_BUILD_VERSION
+
+
+#---------------------------------#
+#      artifacts configuration    #
+#---------------------------------#
+
+after_build:
+  - ps: Get-ChildItem .\installer | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+
+  
+#---------------------------------#
+#     deployment configuration    #
+#---------------------------------#
+
+deploy:
+-  provider: AzureBlob
+   storage_account_name: autodeployedwpfdemo
+   storage_access_key:
+     secure: rNsVVkL4OVZASXIXU87pL/OkV52XlGVTr7FjRswVk0ZVe0sNpG8f5BidVDR06Hs8L1Rszm3GJW7tK/6BVSJB8Q==
+   container: src
+   #folder: 
+   #artifact: SrcArtifact
+
+
+# on_finish:
+#  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))    
