@@ -51,7 +51,7 @@ namespace AutoDeployedWpfDemo
             }
             else
             {
-                urlOrPath = @"https://autodeployedwpfdemo.blob.core.windows.net/src";
+                urlOrPath = @"https://autodeployedwpfdemo.blob.core.windows.net/releases";
             }
             using (var manager = new UpdateManager(urlOrPath))
             {
