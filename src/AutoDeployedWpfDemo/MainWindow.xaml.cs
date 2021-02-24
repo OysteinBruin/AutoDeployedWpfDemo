@@ -25,9 +25,12 @@ namespace AutoDeployedWpfDemo
         public MainWindow()
         {
             InitializeComponent();
+
             AddVersionNumber();
             CheckForUpdates();
         }
+
+
 
         private void AddVersionNumber()
         {
@@ -37,39 +40,23 @@ namespace AutoDeployedWpfDemo
             this.Title += $" v{ versionInfo.FileVersion }";
         }
 
-        private async void CheckForUpdates()
+        private async Task CheckForUpdates()
         {
-            string path = @"https://autodeployedwpfdemo.blob.core.windows.net/src";//@"C:\dev\C#\Releases\PlcUnitTest";
+            string urlOrPath;
+            bool isDevelopment = false;
 
-            using (var manager = new UpdateManager(path))
+            if (isDevelopment)
             {
-                manager.UpdateApp();
+                urlOrPath = @"D:\Dev\C#\ProjectsReleased\SquirrelTest\Releases";
             }
-            //using (var manager = new UpdateManager(@""))
-            //{
-                //UpdateInfo info = await manager.CheckForUpdate();
-                //var sb = new StringBuilder("Check for updates result:");
-
-                //if (info != null)
-                //{
-                //    var releaseNotes = info.FetchReleaseNotes();
-                //    foreach (var item in releaseNotes)
-                //    {
-                //        sb.Append("Package ");
-                //        sb.Append(item.Key.PackageName);
-                //        sb.Append(" - File ");
-                //        sb.AppendLine(item.Key.Filename);
-                //    }
-                //   // ReleaseEntry entry = await manager.UpdateApp();
-
-                //}
-                //else
-                //{
-                //    sb.AppendLine("No updates avavilable.");
-                //}
-
-                //this.updateInfoText.Text = sb.ToString();
-            //}
+            else
+            {
+                urlOrPath = @"https://autodeployedwpfdemo.blob.core.windows.net/src";
+            }
+            using (var manager = new UpdateManager(urlOrPath))
+            {
+                await manager.UpdateApp();
+            }
         }
     }
 }

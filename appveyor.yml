@@ -49,7 +49,8 @@ build_script:
 #---------------------------------#
 
 after_build:
-  - ps: Get-ChildItem .\installer | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+  - ps: Get-ChildItem .\releases | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+  - ps: Push-AppveyorArtifact ./AutoRelease/tools/Update.exe
 
   
 #---------------------------------#
@@ -61,11 +62,9 @@ deploy:
    storage_account_name: autodeployedwpfdemo
    storage_access_key:
      secure: a90Xur2gLr+DEtTH0U5Yp7QE2CSbBsmdOdmrI1KxuFt3Yfg0ga9Hd+tlnXsJjVdhlrKswQdiFtimjDyMFNjjTGMKHeOe4pCSp8ZuhYEHbzDwjP1p5qF2PczfuY6o3XJI
-   container: src
+   container: releases
    remove_files: true
-   #folder: 
-   #artifact: SrcArtifact
 
-
+# 
 # on_finish:
 #  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))    
