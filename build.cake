@@ -1,16 +1,16 @@
 #tool "nuget:?package=7-Zip.CommandLine"
 #addin "nuget:?package=Cake.7zip"
+#addin nuget:?package=Cake.AzCopy
+
 
 // ARGUMENTS
 
 var target = Argument("target", "Default");
+var solutionPath Argument<string>("solutionPath");
 var buildPath = Argument<string>("buildPath");
 var appId  = Argument<string>("appId");
-var appVersion = Argument<string>("appVersion", "1.0.0");
+var appVersion = Argument<string>("appVersion");
 
-// Define directories.
-
-var solution = "./src/AutoDeployedWpfDemo.sln";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
@@ -45,14 +45,14 @@ Task("Restore-NuGet-Packages")
     .IsDependentOn("Clean")
     .Does(() =>
 {
-    NuGetRestore(solution);
+    NuGetRestore(solutionPath);
 });
 
 Task("Build")
     .IsDependentOn("Restore-NuGet-Packages")
     .Does(() =>
 {
-    MSBuild(solution, settings =>
+    MSBuild(solutionPath, settings =>
         settings.SetConfiguration("Release"));
 });
 
@@ -61,47 +61,73 @@ Task("Build")
 
 // DEPLOYMENT
 
-var appPath = new DirectoryPath("./").MakeAbsolute(Context.Environment);
-var autoReleaseLink = "https://versionupdater.blob.core.windows.net/releases/AutoReleasev0.0.1.7z";
-var autoReleasArchive = appPath.CombineWithFilePath("AutoReleasev0.0.1.7z");
-
-Task("DownloadAutoRelease")
-    .IsDependentOn("Build")
+Task("DownloadPreviousReleaseFiles")
+    //.IsDependentOn("Build")
     .Does(() =>
 {
-    if (!DirectoryExists("./AutoRelease"))
+    Information("Creating folder releases, downloading previous release files to releases");
+    if (!DirectoryExists("./releases"))
     {
-        CreateDirectory("./AutoRelease");
+        CreateDirectory("./releases");
+    }
+
+
+    AzCopy("https://myaccount.blob.core.windows.net/mycontainer/", "./releases");
+        
+    foreach(var file in GetFiles("./releases/**"))
+    {
+        Information(file.Path.GetFilename());
+    }
+
+
+});
+
+
+
+var appPath = new DirectoryPath("./").MakeAbsolute(Context.Environment);
+var autoReleaseLink = "https://versionupdater.blob.core.windows.net/releases/AutoReleaseTool_v0.0.1.7z";
+var autoReleasArchive = appPath.CombineWithFilePath("AutoReleaseTool_v0.0.1.7z");
+
+Task("DownloadAutoRelease")
+    .IsDependentOn("DownloadPreviousReleaseFiles")
+    .Does(() =>
+{
+    if (!DirectoryExists("./AutoReleaseTool"))
+    {
+        CreateDirectory("./AutoReleaseTool");
     }
 
     using (var wc = new System.Net.WebClient())
     {
         Information("DownloadAutoRelease");
         DownloadFile(
-            "https://versionupdater.blob.core.windows.net/releases/AutoReleasev0.0.1.7z",
-            "./AutoRelease/AutoReleasev0.0.1.7z" 
+            "https://versionupdater.blob.core.windows.net/releases/AutoReleaseTool_v0.0.1.7z",
+            "./AutoRelease/AutoReleaseTool_v0.0.1.7z" 
         );
     }
 
 });
 
-Task("UnzipAutoRelease")
-    .IsDependentOn("DownloadAutoRelease")
+
+
+
+Task("UnzipAutoReleaseTool")
+    .IsDependentOn("DownloadAutoReleaseTool")
     .Does(() =>
 {
 
     SevenZip(m => m
       .InExtractMode()
-      .WithArchive(File("./AutoRelease/AutoReleasev0.0.1.7z"))
+      .WithArchive(File("./AutoReleaseTool/AutoReleaseTool_v0.0.1.7z"))
       .WithArchiveType(SwitchArchiveType.SevenZip)
-      .WithOutputDirectory("./AutoRelease/"));
+      .WithOutputDirectory("./AutoReleaseTool/"));
 });
 
 Task("Package")
-    .IsDependentOn("UnzipAutoRelease")
+    .IsDependentOn("UnzipAutoReleaseTool")
     .Does(() => 
 {
-        FilePath autoReleasePath = "./AutoRelease/AutoRelease.exe";
+        FilePath autoReleasePath = "./AutoReleaseTool/AutoReleaseTool.exe";
         StartProcess(autoReleasePath, new ProcessSettings {
         Arguments = new ProcessArgumentBuilder()
             .Append(buildPath)

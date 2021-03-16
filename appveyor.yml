@@ -41,7 +41,7 @@ platform: Any CPU
 configuration: Release
 
 build_script:
-  - ps: .\build.ps1 --buildPath="./src/AutoDeployedWpfDemo/bin/Release" --appId="AutoDeployedWpfDemo" --appVersion=$env:APPVEYOR_BUILD_VERSION
+  - ps: .\build.ps1 --solutionPath = "./src/AutoDeployedWpfDemo.sln" --buildPath="./src/AutoDeployedWpfDemo/bin/Release" --appId="AutoDeployedWpfDemo" --appVersion=$env:APPVEYOR_BUILD_VERSION
 
 
 #---------------------------------#
@@ -50,7 +50,7 @@ build_script:
 
 after_build:
   - ps: Get-ChildItem .\releases | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
-  - ps: Push-AppveyorArtifact ./AutoRelease/tools/Update.exe
+  - ps: Push-AppveyorArtifact ./AutoReleaseTool/Tools/Update.exe
 
   
 #---------------------------------#
