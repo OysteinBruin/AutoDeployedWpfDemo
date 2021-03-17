@@ -1,12 +1,10 @@
-#tool "nuget:?package=7-Zip.CommandLine"
-#addin "nuget:?package=Cake.7zip"
-#addin nuget:?package=Cake.AzCopy
-
+#tool nuget:?package=7-Zip.CommandLine
+#addin nuget:?package=Cake.7zip&version=1.0.2
 
 // ARGUMENTS
 
 var target = Argument("target", "Default");
-var solutionPath Argument<string>("solutionPath");
+var solutionPath = Argument<string>("solutionPath");
 var buildPath = Argument<string>("buildPath");
 var appId  = Argument<string>("appId");
 var appVersion = Argument<string>("appVersion");
@@ -56,40 +54,43 @@ Task("Build")
         settings.SetConfiguration("Release"));
 });
 
-// TEST
+// TEST - TODO: add test task here
 
 
-// DEPLOYMENT
-
-Task("DownloadPreviousReleaseFiles")
-    //.IsDependentOn("Build")
+// GET REQUIRED TOOLS AND FILES
+Task("DownloadAzureCopy")
+    .IsDependentOn("Build")
     .Does(() =>
 {
-    Information("Creating folder releases, downloading previous release files to releases");
-    if (!DirectoryExists("./releases"))
+    if (!DirectoryExists("./AzureCopyTool"))
     {
-        CreateDirectory("./releases");
+        CreateDirectory("./AzureCopyTool");
     }
 
-
-    AzCopy("https://myaccount.blob.core.windows.net/mycontainer/", "./releases");
-        
-    foreach(var file in GetFiles("./releases/**"))
+    using (var wc = new System.Net.WebClient())
     {
-        Information(file.Path.GetFilename());
+        Information("Downloading azcopy");
+        DownloadFile(
+            "https://autodeploytools.blob.core.windows.net/tools/azcopy.7z",
+            "./AzureCopyTool/azcopy.7z" 
+        );
     }
-
-
 });
 
+Task("UnzipAzureCopy")
+    .IsDependentOn("DownloadAzureCopy")
+    .Does(() =>
+{
 
+    SevenZip(m => m
+      .InExtractMode()
+      .WithArchive(File("./AzureCopyTool/azcopy.7z"))
+      .WithArchiveType(SwitchArchiveType.SevenZip)
+      .WithOutputDirectory("./AzureCopyTool/"));
+});
 
-var appPath = new DirectoryPath("./").MakeAbsolute(Context.Environment);
-var autoReleaseLink = "https://versionupdater.blob.core.windows.net/releases/AutoReleaseTool_v0.0.1.7z";
-var autoReleasArchive = appPath.CombineWithFilePath("AutoReleaseTool_v0.0.1.7z");
-
-Task("DownloadAutoRelease")
-    .IsDependentOn("DownloadPreviousReleaseFiles")
+Task("DownloadAutoReleaseTool")
+    .IsDependentOn("UnzipAzureCopy")
     .Does(() =>
 {
     if (!DirectoryExists("./AutoReleaseTool"))
@@ -99,17 +100,14 @@ Task("DownloadAutoRelease")
 
     using (var wc = new System.Net.WebClient())
     {
-        Information("DownloadAutoRelease");
+        Information("Downloading AutoReleaseTool");
         DownloadFile(
-            "https://versionupdater.blob.core.windows.net/releases/AutoReleaseTool_v0.0.1.7z",
-            "./AutoRelease/AutoReleaseTool_v0.0.1.7z" 
+            "https://autodeploytools.blob.core.windows.net/tools/AutoReleaseTool.7z",
+            "./AutoReleaseTool/AutoReleaseTool.7z" 
         );
     }
 
 });
-
-
-
 
 Task("UnzipAutoReleaseTool")
     .IsDependentOn("DownloadAutoReleaseTool")
@@ -118,22 +116,55 @@ Task("UnzipAutoReleaseTool")
 
     SevenZip(m => m
       .InExtractMode()
-      .WithArchive(File("./AutoReleaseTool/AutoReleaseTool_v0.0.1.7z"))
+      .WithArchive(File("./AutoReleaseTool/AutoReleaseTool.7z"))
       .WithArchiveType(SwitchArchiveType.SevenZip)
       .WithOutputDirectory("./AutoReleaseTool/"));
 });
 
-Task("Package")
+Task("DownloadPreviousReleaseFiles")
     .IsDependentOn("UnzipAutoReleaseTool")
+    .Does(() =>
+{
+    Information("Creating folder: ./releases, downloading previous release files");
+    
+    
+    FilePath azcopyPath = "./AzureCopyTool/azcopy.exe";
+    StartProcess(azcopyPath, new ProcessSettings {
+        Arguments = new ProcessArgumentBuilder()
+            .Append("copy")
+            .Append("https://autodeployedwpfdemo.blob.core.windows.net/releases/")
+            .Append("./")
+            .Append("--recursive")
+    });
+
+});
+
+// PREPARE 
+//Task("CopyPreviousFilesToReleasesDir")
+//    .IsDependentOn("DownloadPreviousReleaseFiles")
+//    .Does(() => 
+//{
+//    Information("Copying retrived files from previous release up one level");
+// 	  var files = GetFiles("./releases/releases/*");
+//    CopyFiles(files, "./releases/", true);
+//});
+
+
+Task("Package")
+    .IsDependentOn("DownloadPreviousReleaseFiles")
     .Does(() => 
 {
-        FilePath autoReleasePath = "./AutoReleaseTool/AutoReleaseTool.exe";
-        StartProcess(autoReleasePath, new ProcessSettings {
-        Arguments = new ProcessArgumentBuilder()
-            .Append(buildPath)
-            .Append(appId)
-            .Append(appVersion)
-        });
+    if (!DirectoryExists("./releases"))
+    {
+        CreateDirectory("./releases");
+    }
+    FilePath autoReleasePath = "./AutoReleaseTool/AutoReleaseTool.exe";
+    StartProcess(autoReleasePath, new ProcessSettings {
+    Arguments = new ProcessArgumentBuilder()
+        .Append(buildPath)
+        .Append(appId)
+        .Append(appVersion)
+    });
 });
 
 
@@ -141,4 +172,3 @@ Task("Package")
 Task("Default").IsDependentOn("Package");
 
 RunTarget(target);
-
