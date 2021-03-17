@@ -50,7 +50,7 @@ build_script:
 
 after_build:
   - ps: Get-ChildItem .\releases | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
-  - ps: Push-AppveyorArtifact ./AutoReleaseTool/Tools/Update.exe
+ # - ps: Push-AppveyorArtifact ./AutoReleaseTool/Tools/Update.exe
 
   
 #---------------------------------#
