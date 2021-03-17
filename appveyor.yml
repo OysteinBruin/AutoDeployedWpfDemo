@@ -41,7 +41,7 @@ platform: Any CPU
 configuration: Release
 
 build_script:
-  - ps: .\build.ps1 --solutionPath = "./src/AutoDeployedWpfDemo.sln" --buildPath="./src/AutoDeployedWpfDemo/bin/Release" --appId="AutoDeployedWpfDemo" --appVersion=$env:APPVEYOR_BUILD_VERSION
+  - ps: .\build.ps1 --solutionPath="./src/AutoDeployedWpfDemo.sln" --buildPath="./src/AutoDeployedWpfDemo/bin/Release" --appId="AutoDeployedWpfDemo" --appVersion=$env:APPVEYOR_BUILD_VERSION
 
 
 #---------------------------------#
