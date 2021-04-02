@@ -9,6 +9,6 @@
         Title="Auto Deployed WPF Demo" Height="450" Width="800">
     <StackPanel Orientation="Vertical">
         <TextBlock HorizontalAlignment="Center" Margin="10 50 10 10" FontSize="14" Foreground="WhiteSmoke"><Run Text="This application demonstrates setup of CI/CD of desktop application using "/><Run Text="cake.build"/></TextBlock>
-        <TextBlock HorizontalAlignment="Center" Margin="10 50 10 10" FontSize="20" FontWeight="Bold" Foreground="Red"><Run Text="More content here"/></TextBlock>
+        <TextBlock HorizontalAlignment="Center" Margin="10 50 10 10" FontSize="20" FontWeight="Bold" Foreground="DeepPink"><Run Text="More content here"/></TextBlock>
     </StackPanel>
 </Window>
