@@ -58,7 +58,7 @@ Information("No Unit Tests are added yet.");
 
 //
 Task("DownloadPreviousReleaseFiles")
-    .IsDependentOn("UnzipAutoReleaseTool")
+    .IsDependentOn("Build")
     .Does(() =>
 {
     Information("Downloading previous release files");
